@@ -11,13 +11,14 @@
     "@supabase/supabase-js": "latest",
     "@wppconnect-team/wppconnect": "^1.35.2",
     "dotenv": "latest",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
     "openai": "^4.20.1",
     "puppeteer": "^24.2.1",
     "puppeteer-core": "^24.2.1",
+    "qrcode": "^1.5.4",
     "qrcode-terminal": "latest",
-    "whatsapp-web.js": "latest",
-    "express": "^4.18.2",
-    "node-fetch": "^3.3.2"
+    "whatsapp-web.js": "latest"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

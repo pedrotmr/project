@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import express from "express";
 import fetch from "node-fetch";
+import qr from "qrcode";
 import qrcode from "qrcode-terminal";
 import pkg from "whatsapp-web.js";
 const { Client, LocalAuth } = pkg;
@@ -302,12 +303,74 @@ client.on("message_create", async (message) => {
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Armazenar o último QR code
+let lastQR = "";
+
+// Rota principal com HTML que mostra o QR code
 app.get("/", (req, res) => {
-  res.send("Bot is running!");
+  const html = `
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>WhatsApp Bot QR Code</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <style>
+                    body {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        min-height: 100vh;
+                        margin: 0;
+                        background-color: #f0f2f5;
+                        font-family: Arial, sans-serif;
+                    }
+                    .qr-container {
+                        background: white;
+                        padding: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                        text-align: center;
+                    }
+                    .status {
+                        margin-top: 20px;
+                        color: #075e54;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="qr-container">
+                    ${
+                      lastQR
+                        ? `<img src="${lastQR}" alt="WhatsApp QR Code"/>`
+                        : "<p>Aguardando QR Code...</p>"
+                    }
+                    <div class="status">
+                        <p>Status: ${
+                          client.info ? "Conectado" : "Aguardando conexão"
+                        }</p>
+                    </div>
+                </div>
+            </body>
+        </html>
+    `;
+  res.send(html);
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+// Atualizar o QR code quando gerado
+client.on("qr", async (qrCode) => {
+  console.log("QR RECEIVED", qrCode);
+  try {
+    // Gerar QR code como URL de dados
+    lastQR = await qr.toDataURL(qrCode);
+  } catch (err) {
+    console.error("Erro ao gerar QR code:", err);
+  }
+});
+
+client.on("ready", () => {
+  console.log("Client is ready!");
+  lastQR = ""; // Limpar QR code quando conectado
 });
 
 // Melhorar reconexão
@@ -328,3 +391,7 @@ client.on("disconnected", async (reason) => {
 });
 
 client.initialize();
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
