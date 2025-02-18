@@ -14,20 +14,21 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
-// Configuração otimizada do WhatsApp client
+// Configuração do cliente WhatsApp com caminho correto do Chrome
 const client = new Client({
-  authStrategy: new LocalAuth({
-    clientId: "bot-financeiro",
-  }),
+  authStrategy: new LocalAuth(),
   puppeteer: {
-    headless: false,
-    executablePath:
-      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    headless: true,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
+      "--disable-accelerated-2d-canvas",
+      "--no-first-run",
+      "--no-zygote",
+      "--disable-gpu",
     ],
+    executablePath: "/usr/bin/chromium",
   },
 });
 

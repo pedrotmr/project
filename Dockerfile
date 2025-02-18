@@ -31,7 +31,9 @@ RUN apt-get update && apt-get install -y \
 # Limpar cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Criar diretório de trabalho e definir permissões
 WORKDIR /app
+RUN mkdir -p /app/.wwebjs_auth && chmod -R 777 /app
 
 # Copiar arquivos do projeto
 COPY package*.json ./
@@ -40,9 +42,12 @@ COPY . .
 # Instalar dependências
 RUN npm install
 
-# Definir variável de ambiente para o Chrome
+# Definir variáveis de ambiente
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Definir usuário não-root
+USER node
 
 # Iniciar a aplicação
 CMD ["node", "src/index.js"] 
