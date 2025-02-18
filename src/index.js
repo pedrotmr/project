@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import express from "express";
 import fetch from "node-fetch";
 import qrcode from "qrcode-terminal";
 import pkg from "whatsapp-web.js";
@@ -42,12 +43,12 @@ client.on("loading_screen", (percent, message) => {
   console.log("CARREGANDO:", percent, message);
 });
 
-client.on("authenticated", () => {
-  console.log("AUTENTICADO! Bot está conectado ao WhatsApp.");
+client.on("authenticated", (session) => {
+  console.log("AUTHENTICATED", session);
 });
 
 client.on("auth_failure", (msg) => {
-  console.error("Falha na autenticação:", msg);
+  console.error("AUTHENTICATION FAILURE", msg);
 });
 
 client.on("disconnected", (reason) => {
@@ -296,12 +297,24 @@ client.on("message_create", async (message) => {
   }
 });
 
-// Melhor tratamento de reconexão
+// Adicionar endpoint básico para health check
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("Bot is running!");
+});
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
+// Melhorar reconexão
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
 client.on("disconnected", async (reason) => {
-  console.log("Desconectado:", reason);
+  console.log("Client was disconnected", reason);
   if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
     reconnectAttempts++;
     console.log(

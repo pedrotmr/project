@@ -8,14 +8,16 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/supabase-js": "latest",
     "@wppconnect-team/wppconnect": "^1.35.2",
-    "dotenv": "^16.3.1",
+    "dotenv": "latest",
     "openai": "^4.20.1",
     "puppeteer": "^24.2.1",
     "puppeteer-core": "^24.2.1",
-    "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.26.0"
+    "qrcode-terminal": "latest",
+    "whatsapp-web.js": "latest",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
